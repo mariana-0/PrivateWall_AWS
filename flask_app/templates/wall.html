@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Wall</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <header class="d-flex justify-content-between align-items-center">
+            <h1>Muro Privado</h1>
+            <h2>Bienvenid@ {{user.first_name}}</h2>
+            <a href="/logout" class="btn btn-danger">Cerrar Sesión</a>
+        </header>
+        <hr>
+        <main>
+            <div class="row">
+                <div class="col-6">
+                    <h2><u>{{number_received}} Message(s) for You</u></h2>
+                    {% for message in messages %}
+                        <div class="card">
+                            <div class="card-title">{{message.sender_name}} said:</div>
+                            <div class="card-text">"{{message.content}}"</div>
+                            <div class="card-note"><i>sent {{time - message.created_at}} ago</i></div>
+                            <a href="/delete/message/{{message.id}}" class="btn btn-danger">Delete</a>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                </div>
+                <div class="col-6">
+                    <h2><u>Send Messages</u></h2>
+                    <h4 style="color:rgb(20, 120, 120);">You have sent {{number_sent}} menssages so far</h4>
+                    {% with error_messages = get_flashed_messages(category_filter=['send_message']) %}
+                        {% if error_messages %}
+                            <div class="alert alert-danger">
+                                {% for error in error_messages %}
+                                    <p>{{error}}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}        
+                    {% for u in users%}
+                        {% if u.id!=user.id %}
+                            <form action="/send_message" method="post">
+                                <div class="form-group">
+                                    <label for="content">{{u.first_name}}</label>
+                                    <textarea id="conent" name="content" class="form-control"></textarea>
+                                    <input type="submit" class="btn btn-success mt-2">
+                                    <input type="hidden" name="sender_id" value="{{user.id}}">
+                                    <input type="hidden" name="receiver_id" value="{{u.id}}">
+                                </div>
+                            </form>
+                        {%endif%}
+                    {%endfor%}
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
